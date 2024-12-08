@@ -4,8 +4,10 @@
 
 #include "bsp/board_api.h"
 #include "hardware/gpio.h"
+#include "rpico-servo/servo.h"
 #include "tusb.h"
 uint8_t packet[4];
+Servo servo(12);
 
 enum {
     BLINK_NOT_MOUNTED = 250,
@@ -39,13 +41,14 @@ int main(void) {
     board_init();
     gpio_init(9);
     gpio_set_dir(9, GPIO_OUT);
-
+    servo.init();
     // init device stack on configured roothub port
     tusb_rhport_init_t dev_init = {
         .role = TUSB_ROLE_DEVICE,
         .speed = TUSB_SPEED_AUTO};
     tusb_init(BOARD_TUD_RHPORT, &dev_init);
     printf("START\n");
+    servo.write(90);
 
     if (board_init_after_tusb) {
         board_init_after_tusb();
@@ -126,6 +129,24 @@ void solenoid_task(void) {
                 printf("time over\n");
                 note_on_time = 0;
             }
+        } else if (packet[2] % 12 == G) {
+            servo.write(60);
+        } else if (packet[2] % 12 == A) {
+            servo.write(90);
+        } else if (packet[2] % 12 == B) {
+            servo.write(120);
+        } else if (packet[2] % 12 == F_SHARP) {
+            servo.write(60);
+            gpio_put(9, 1);
+            note_on = true;
+        } else if (packet[2] % 12 == G_SHARP) {
+            servo.write(90);
+            gpio_put(9, 1);
+            note_on = true;
+        } else if (packet[2] % 12 == A_SHARP) {
+            servo.write(120);
+            gpio_put(9, 1);
+            note_on = true;
         } else {
             gpio_put(9, 1);
             note_on = true;

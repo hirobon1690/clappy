@@ -62,10 +62,18 @@ target_include_directories(tinyusb PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/tinyusb/src
   ${CMAKE_CURRENT_LIST_DIR}/tinyusb/hw
   ${CMAKE_CURRENT_LIST_DIR}/tinyusb/hw/bsp
+  ${CMAKE_CURRENT_LIST_DIR}/rpico-servo
+  
+  ${PICO_SDK_PATH}/src/common/pico_stdlib/include
+  ${PICO_SDK_PATH}/src/rp2_common/hardware_pwm/include
 )
 # Add all .c files in tinyusb/src to the project
 file(GLOB TINYUSB_SRC_FILES ${CMAKE_CURRENT_LIST_DIR}/tinyusb/src/*.c)
+file(GLOB RPICO_SERVO_SRC_FILES ${CMAKE_CURRENT_LIST_DIR}/rpico-servo/*.cpp)
+
 target_sources(tinyusb PRIVATE ${TINYUSB_SRC_FILES})
+target_sources(tinyusb PRIVATE ${RPICO_SERVO_SRC_FILES})
+
 target_sources(tinyusb PRIVATE ${CMAKE_CURRENT_LIST_DIR}/usb_descriptors.c)
 
 # Ensure tusb_config.h is in the include path
